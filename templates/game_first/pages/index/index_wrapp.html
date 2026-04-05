@@ -1,0 +1,55 @@
+{% extends 'game_first/base_temp.html' %}
+
+
+{% block content %}
+
+<main class="game-page">
+
+  <section class="game-hero">
+    <div class="game-copy">
+      <p class="eyebrow">Three.js sandbox</p>
+      <h1>Привет, {{ user_name }}</h1>
+      <p class="lead">
+        Это стартовая сцена для экспериментов с Three.js. Здесь уже есть рендер, камера,
+        свет, игровой цикл и отдельные модули для логики.
+      </p>
+    </div>
+  </section>
+
+  <section class="game-layout">
+    <div class="game-stage">
+      <div id="gameCanvasRoot2" class="game-canvas-root2"></div>
+      <canvas id="gameCanvasRoot" class="game-canvas-root"></canvas>
+    </div>
+
+    <aside class="game-panel">
+      <div class="panel-card">
+        <h2>Управление</h2>
+        <p>Можно сразу крутить камеру мышкой и тестировать свою логику поверх готовой сцены.</p>
+
+        <div class="panel-actions">
+          <button id="toggleAnimationBtn" type="button">Пауза анимации</button>
+          <button id="resetSceneBtn" type="button">Сбросить сцену</button>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h2>Что дальше</h2>
+        <ul class="feature-list">
+          <li>Добавь новых объектов в папку <code>game/objects</code></li>
+          <li>Вынеси механику игрока в отдельный класс</li>
+          <li>Подключи загрузку текстур и моделей</li>
+          <li>Добавь HUD и взаимодействие с API</li>
+        </ul>
+      </div>
+
+      <div class="panel-card">
+        <h2>Статус</h2>
+        <p id="sceneStatus">Сцена готовится...</p>
+      </div>
+    </aside>
+  </section>
+
+</main>
+
+{% endblock %}

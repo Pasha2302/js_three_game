@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/static/game_first/img/favicon.webp" type="image/x-icon" />
+    <title>Стартовая страница</title>
+
+    <link rel="stylesheet" href="/static/game_first/css/style.css?v=1.0.1"/>
+  </head>
+
+
+  <body data-page="{{ name_page }}">
+
+    {% block content %}
+    {% endblock %}
+
+
+    <script type="module" src="/static/game_first/js/build/main.js?v=1.0.3"></script>
+
+    {% block extra_js %}
+    {% endblock %}
+  </body>
+
+
+</html>

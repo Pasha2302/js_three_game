@@ -1,0 +1,13 @@
+[project]
+name = "game-js"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "jinja2>=3.1.6",
+    "litestar>=2.21.1",
+    "pydantic>=2.12.5",
+    "sqlalchemy>=2.0.49",
+    "uvicorn>=0.43.0",
+]
