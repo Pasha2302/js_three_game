@@ -1,7 +1,5 @@
 // index_page/docTest/mainGame.js
 'use strict';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { FigureConfigs, SpaceObjectConfigs } from './gameConfigs.js';
 import { FiguresManager } from './allObjects/figures/FiguresManager.js';
 import { SpaceObjectManager } from './allObjects/spaceObjects/manager.js';
@@ -12,18 +10,20 @@ import { GameSceneManager } from './scenes/manager.js';
 
 export class MaintThreeJs {
     constructor() {
-        this.canvas = document.querySelector('#gameCanvasRoot');
-        this.renderer = new THREE.WebGLRenderer( {antialias: true, canvas: this.canvas} );
+        this.rootElm = document.querySelector('#gameCanvasRoot');
         // GameSceneManager теперь отвечает за всё, что связано со сценой:
-        // camera, light, helpers и сам объект scene.
-        this.gameSceneManager = new GameSceneManager();
+        this.gameSceneManager = new GameSceneManager(this.rootElm);
 
         this.scene = null;
-        this.controls = null;
         this.camera = null;
+        this.renderer = null;
+        this.controls = null;
 
+        // this.isOnStart = true;
+        this.lastFrameTime = 0;
         this.isPaused = false;
-
+        this.animationFrameId = null;
+        
         this.figuresObjsManager = null;
         this.spaceObjsManager = null;
 
@@ -35,13 +35,8 @@ export class MaintThreeJs {
         this.gameSceneManager.init();
         this.scene = this.gameSceneManager.scene;
         this.camera = this.gameSceneManager.camera;
-
-        // OrbitControls -- это класс из библиотеки three.js,
-        // который позволяет легко добавлять интерактивное управление камерой с помощью мыши или сенсорного экрана.
-        this.controls = new OrbitControls(this.camera, this.canvas);
-        this.controls.enableDamping = true; // плавное замедление — очень приятно на ощупь
-
-        this._updateRendererSize();
+        this.renderer = this.gameSceneManager.renderer;
+        this.controls = this.gameSceneManager.controls;
 
         // Отдельный менеджер фигур хранит коллекцию объектов и логику их обновления.
         // this.figures = new FiguresManager(this.scene);
@@ -52,29 +47,41 @@ export class MaintThreeJs {
         this.spaceObjsManager = new SpaceObjectManager(this.scene);
         this.spaceObjsManager.createObjects(SpaceObjectConfigs);
 
-        // Вызвав функцию render рендерера передав ей сцену и камеру:
-        this.renderer.render(this.scene, this.camera);
-        requestAnimationFrame(this._mainLoop);
-
+        this._updateRendererSize();
         window.addEventListener('resize', this._handleResize);
-
         document.querySelector('#sceneStatus').textContent = 'Сцена запущена ✓';
+
+        // lastFrameTime -- это свойство для хранения времени последнего кадра, чтобы вычислять deltaTime
+        // ( performance ) -- это глобальный объект, предоставляющий высокоточные таймеры.
+        // performance.now() возвращает время в миллисекундах с момента загрузки страницы, с высокой точностью.
+        this.lastFrameTime = performance.now();
+        // animationFrameId -- хранит ID текущего запроса анимации, чтобы можно было его отменить при необходимости
+        this.animationFrameId = requestAnimationFrame(this._mainLoop);
     }
 
-    _mainLoop(time) {
-        time *= 0.001;  // конвертировать время в секунды
+    _mainLoop(currentTime) {
+        // deltaTime -- это разница во времени между текущим кадром и последним кадром, в секундах.
+        // Нужно что бы обновление объектов не зависело от производительности устройства и частоты кадров.
+        // const deltaTime = Math.min((currentTime - this.lastFrameTime) / 1000, 0.032);
+        // this.lastFrameTime = currentTime;
+
+        const deltaTime = currentTime * 0.001;  // конвертировать время в секунды
 
         if (this.figuresObjsManager) {
-            this.figuresObjsManager.tick(time, this.isPaused);
+            this.figuresObjsManager.tick(deltaTime, this.isPaused);
         }
 
         if (this.spaceObjsManager) {
-            this.spaceObjsManager.tick(time, this.isPaused);
+            this.spaceObjsManager.tick(deltaTime, this.isPaused);
         }
         
-        this.controls.update(); // нужно если enableDamping = true
+        if (this.controls) this.controls.update(); // нужно если enableDamping = true
+
         this.renderer.render(this.scene, this.camera);
-        requestAnimationFrame(this._mainLoop);
+        // animationFrameId -- это ID текущего запроса анимации, который возвращает requestAnimationFrame.
+        // Он нужен для того, чтобы можно было отменить запрос при необходимости
+        // (например, при остановке анимации или уничтожении сцены).
+        this.animationFrameId = requestAnimationFrame(this._mainLoop);
     }
 
     _updateRendererSize() {
@@ -83,7 +90,7 @@ export class MaintThreeJs {
         const height = canvas.clientHeight;
         this.gameSceneManager.needResize = canvas.width !== width || canvas.height !== height;
 
-        if ( this.gameSceneManager.needResize ) {
+        if ( this.gameSceneManager.needResize) {
             this.renderer.setSize(width, height, false); // false — не трогать CSS размер
             this.renderer.setPixelRatio(window.devicePixelRatio);
             this.gameSceneManager.setCameraAspect(width, height);

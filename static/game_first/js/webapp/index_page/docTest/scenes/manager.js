@@ -1,27 +1,41 @@
 // index_page/docTest/scenes/manager.js
 'use strict';
 import * as THREE from 'three';
-import { CameraConfig, HelperConfig, LightConfig } from '../gameConfigs.js';
+import { CameraConfig, HelperConfig, LightConfig, RendererConfig } from '../gameConfigs.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 
 export class GameSceneManager {
-    constructor() {
+    constructor(rootElm) {
+        this.rootElm = rootElm;
         // Все, что вы хотите нарисовать необходимо добавить на сцену.
-        this.scene = new THREE.Scene(); // Создание сцены
+        this.scene = null;
         this.camera = null;
         this.light = null;
+        this.renderer = null;
+        this.controls = null;
+
         this.lightHelper = null;
-        this.sun = null;
         this.ambientLight = null;
 
-        this.needResize = false;
+        this.needResize = null;
     }
 
     init() {
+        this._createScene();
         this._createСamera();
         this._createLight();
+
+        this._createRenderer();
+        this._createControls();
         this._createHelpers();
+        
         return this;
+    }
+
+    _createScene() {
+        // Создание сцены:
+        this.scene = new THREE.Scene(); 
     }
 
     _createСamera() {
@@ -56,6 +70,34 @@ export class GameSceneManager {
 
         this.scene.add(this.light);
         this.scene.add(this.ambientLight);
+    }
+
+    _createRenderer() {
+        // const renderer = new THREE.WebGLRenderer({
+        //     // Включаем сглаживание краёв (антиалиасинг) для более плавной графики.
+        //     antialias: RendererConfig.antialias,
+        //     // Если alpha: true, то фон будет прозрачным. В нашем случае мы используем сплошной цвет фона, поэтому alpha: false.
+        //     alpha: true,
+        // });
+        const canvas = document.querySelector('#can1');
+        const renderer = new THREE.WebGLRenderer( { antialias: true, canvas } );
+    
+        renderer.setPixelRatio( Math.min(window.devicePixelRatio || 1, 2) );
+        renderer.setClearColor(RendererConfig.clearColor);
+        // SRGBColorSpace -- это цветовое пространство, которое соответствует тому, как человеческий глаз воспринимает цвета.
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+    
+        // this.rootElm.appendChild(renderer.domElement);
+        this.renderer = renderer;
+    }
+
+    _createControls() {
+        const controls = new OrbitControls(this.camera, this.renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.06;
+        controls.target.set(0, 0.6, 0);
+        controls.update();
+        this.controls = controls;
     }
 
     _createHelpers() {

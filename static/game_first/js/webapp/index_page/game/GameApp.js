@@ -48,23 +48,12 @@ export class GameApp {
         window.addEventListener('resize', this.handleResize);
         this.setStatus('Сцена запущена. Можно крутить камеру мышкой.');
 
+        // lastFrameTime -- это свойство для хранения времени последнего кадра, чтобы вычислять deltaTime
+        // ( performance ) -- это глобальный объект, предоставляющий высокоточные таймеры.
+        // performance.now() возвращает время в миллисекундах с момента загрузки страницы, с высокой точностью.
         this.lastFrameTime = performance.now();
+        // animationFrameId -- хранит ID текущего запроса анимации, чтобы можно было его отменить при необходимости
         this.animationFrameId = requestAnimationFrame(this.animate);
-    }
-
-    createControls() {
-        const controls = new OrbitControls(this.camera, this.renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.06;
-        controls.target.set(0, 0.6, 0);
-        controls.update();
-        return controls;
-    }
-
-    createDemoEntities() {
-        const cube = createDemoCube(GAME_CONFIG.demoCube);
-        this.entities.push(cube);
-        this.scene.add(cube.sceneObject);
     }
 
     animate(currentTime) {
@@ -85,6 +74,21 @@ export class GameApp {
 
         this.renderer.render(this.scene, this.camera);
         this.animationFrameId = requestAnimationFrame(this.animate);
+    }
+
+    createControls() {
+        const controls = new OrbitControls(this.camera, this.renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.06;
+        controls.target.set(0, 0.6, 0);
+        controls.update();
+        return controls;
+    }
+
+    createDemoEntities() {
+        const cube = createDemoCube(GAME_CONFIG.demoCube);
+        this.entities.push(cube);
+        this.scene.add(cube.sceneObject);
     }
 
     handleResize() {

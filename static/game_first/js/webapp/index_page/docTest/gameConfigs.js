@@ -1,25 +1,11 @@
 // index_page/docTest/gameConfigs.js
 'use strict';
 
-// Набор стартовых фигур для демо-сцены.
-// Потом отсюда удобно читать стартовую конфигурацию уровня.
-export const FigureConfigs = [
-    {
-        color: 0x44aa88,
-        size: 1,
-        posX: 0,
-    },
-    {
-        color: 0x8844aa,
-        size: 2,
-        posX: -4,
-    },
-    {
-        color: 0xaa8844,
-        size: 3,
-        posX: 4,
-    },
-];
+
+export const RendererConfig = {
+    clearColor: 0x08111d,
+    antialias: true,
+}
 
 export const CameraConfig = {
     /**
@@ -160,4 +146,27 @@ export const SpaceObjectConfigs = [
         type: 'sun',
         ...SunConfig,
     }
+];
+
+
+// =============================================================================== //
+
+// Набор стартовых фигур для демо-сцены.
+// Потом отсюда удобно читать стартовую конфигурацию уровня.
+export const FigureConfigs = [
+    {
+        color: 0x44aa88,
+        size: 1,
+        posX: 0,
+    },
+    {
+        color: 0x8844aa,
+        size: 2,
+        posX: -4,
+    },
+    {
+        color: 0xaa8844,
+        size: 3,
+        posX: 4,
+    },
 ];
