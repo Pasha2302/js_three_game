@@ -17,9 +17,14 @@ export class SpaceObject {
 
         // Небольшой наклон оси сразу делает планету визуально интереснее.
         this.mesh.rotation.x = this.config.tiltX || 0;
+
+        // Накапливаемые углы для орбиты и самовращения
+        this.selfAngle = 0;
+        this.orbitAngle = 0;
+        this.moonAngle = 0;
     }
 
-    update(time, isPaused) {
+    update(deltaTime, isPaused) {
         if (isPaused) return;
 
         const orbitCenter = this.config.orbitCenter || { x: 0, y: this.startPosition.y, z: 0 };
@@ -27,29 +32,37 @@ export class SpaceObject {
         const orbitSpeed = this.config.orbitSpeed || 0;
         const selfRotationSpeed = this.config.selfRotationSpeed || 0.35;
 
-        // Собственное вращение планеты вокруг своей оси.
-        this.mesh.rotation.y = time * selfRotationSpeed;
+        // Накапливаем углы
+        this.selfAngle += deltaTime * selfRotationSpeed;
+        this.mesh.rotation.y = this.selfAngle;
 
-        // Если у планеты есть спутник, крутим его отдельным pivot-объектом.
+        // Спутник
         if (this.moonPivot && this.config.moon) {
-            this.moonPivot.rotation.y = time * this.config.moon.orbitSpeed;
+            this.moonAngle += deltaTime * this.config.moon.orbitSpeed;
+            this.moonPivot.rotation.y = this.moonAngle;
         }
 
-        // Простая круговая орбита вокруг центра.
+        // Орбита
         if (orbitRadius > 0) {
-            const angle = time * orbitSpeed;
-            this.mesh.position.x = orbitCenter.x + Math.cos(angle) * orbitRadius;
-            this.mesh.position.z = orbitCenter.z + Math.sin(angle) * orbitRadius;
+            this.orbitAngle += deltaTime * orbitSpeed;
+            this.mesh.position.x = orbitCenter.x + Math.cos(this.orbitAngle) * orbitRadius;
+            this.mesh.position.z = orbitCenter.z + Math.sin(this.orbitAngle) * orbitRadius;
             this.mesh.position.y = orbitCenter.y;
         }
     }
 
     reset() {
+        this.selfAngle = 0;
+        this.orbitAngle = 0;
+        this.moonAngle = 0;
+
         this.mesh.rotation.x = this.config.tiltX || 0;
         this.mesh.rotation.y = 0;
+
         if (this.moonPivot) {
             this.moonPivot.rotation.y = 0;
         }
+
         this.mesh.position.set(
             this.startPosition.x,
             this.startPosition.y,

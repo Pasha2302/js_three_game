@@ -33,6 +33,8 @@ export class GameSceneManager {
         return this;
     }
 
+    // ----------------- Методы Иницализации: ------------------------- //
+
     _createScene() {
         // Создание сцены:
         this.scene = new THREE.Scene(); 
@@ -73,21 +75,13 @@ export class GameSceneManager {
     }
 
     _createRenderer() {
-        // const renderer = new THREE.WebGLRenderer({
-        //     // Включаем сглаживание краёв (антиалиасинг) для более плавной графики.
-        //     antialias: RendererConfig.antialias,
-        //     // Если alpha: true, то фон будет прозрачным. В нашем случае мы используем сплошной цвет фона, поэтому alpha: false.
-        //     alpha: true,
-        // });
-        const canvas = document.querySelector('#can1');
-        const renderer = new THREE.WebGLRenderer( { antialias: true, canvas } );
+        const renderer = new THREE.WebGLRenderer( { antialias: true, canvas: this.rootElm } );
     
         renderer.setPixelRatio( Math.min(window.devicePixelRatio || 1, 2) );
         renderer.setClearColor(RendererConfig.clearColor);
         // SRGBColorSpace -- это цветовое пространство, которое соответствует тому, как человеческий глаз воспринимает цвета.
         renderer.outputColorSpace = THREE.SRGBColorSpace;
     
-        // this.rootElm.appendChild(renderer.domElement);
         this.renderer = renderer;
     }
 
@@ -111,7 +105,10 @@ export class GameSceneManager {
         this.scene.add(axesHelper);
     }
 
+    // ----------------- Публичные Методы: ------------------------- //
+
     setCameraAspect(width, height) {
+        // Функция для обновления соотношения сторон камеры при изменении размера окна.
         if (!this.camera) return;
 
         this.camera.aspect = width / height;
@@ -119,9 +116,12 @@ export class GameSceneManager {
     }
 
     resetCamera() {
+        // Функция для сброса камеры в исходное положение и направление взгляда.
         if (!this.camera) return;
 
+        // position.set -- это метод камеры, который устанавливает её позицию в 3D пространстве по координатам x, y, z.
         this.camera.position.set(0, 0, CameraConfig.posZ);
+        // lookAt -- это метод камеры, который заставляет её смотреть на определённую точку в пространстве.
         this.camera.lookAt(0, 0, 0);
     }
 }

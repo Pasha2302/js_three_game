@@ -24,9 +24,9 @@ export class SpaceObjectManager {
         });
     }
 
-    tick(time, isPaused) {
+    tick(deltaTime, isPaused) {
         this.objectslist.forEach((object) => {
-            object.update(time, isPaused);
+            object.update(deltaTime, isPaused);
         });
     }
 

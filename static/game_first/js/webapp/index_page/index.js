@@ -12,7 +12,7 @@ export function init_page_index(baseEv, apiClientJs) {
     const gameJs = new MaintThreeJs();
     gameJs.init();
 
-    document.querySelector('#toggleAnimationBtn').addEventListener('click', () => gameJs.toggleAnimation());
+    document.querySelector('#toggleAnimationBtn').addEventListener('click', () => gameJs.toggleAnimationPaused());
     document.querySelector('#resetSceneBtn').addEventListener('click', () => gameJs.resetScene());
 }
 

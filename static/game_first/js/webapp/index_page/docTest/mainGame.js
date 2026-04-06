@@ -10,7 +10,7 @@ import { GameSceneManager } from './scenes/manager.js';
 
 export class MaintThreeJs {
     constructor() {
-        this.rootElm = document.querySelector('#gameCanvasRoot');
+        this.rootElm = document.querySelector('#canv1');
         // GameSceneManager теперь отвечает за всё, что связано со сценой:
         this.gameSceneManager = new GameSceneManager(this.rootElm);
 
@@ -60,12 +60,12 @@ export class MaintThreeJs {
     }
 
     _mainLoop(currentTime) {
+        // const time = currentTime * 0.001;  // конвертировать время в секунды
+        
         // deltaTime -- это разница во времени между текущим кадром и последним кадром, в секундах.
         // Нужно что бы обновление объектов не зависело от производительности устройства и частоты кадров.
-        // const deltaTime = Math.min((currentTime - this.lastFrameTime) / 1000, 0.032);
-        // this.lastFrameTime = currentTime;
-
-        const deltaTime = currentTime * 0.001;  // конвертировать время в секунды
+        const deltaTime = Math.min((currentTime - this.lastFrameTime) / 1000, 0.032);
+        this.lastFrameTime = currentTime;
 
         if (this.figuresObjsManager) {
             this.figuresObjsManager.tick(deltaTime, this.isPaused);
@@ -103,7 +103,7 @@ export class MaintThreeJs {
 
     // ------ //
 
-    toggleAnimation() {
+    toggleAnimationPaused() {
         this.isPaused = !this.isPaused;
         const btn = document.querySelector('#toggleAnimationBtn');
         btn.textContent = this.isPaused ? 'Продолжить анимацию' : 'Пауза анимации';
